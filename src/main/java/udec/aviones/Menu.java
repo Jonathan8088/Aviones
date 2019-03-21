@@ -20,7 +20,9 @@ public class Menu {
      * objeto que hace referencia al avion con solamente asientos vip
      */    
     AvionVIP vip;
-    
+    /**
+     * objeto que lee los datos entrados por teclado
+     */
     Scanner dato = new Scanner(System.in);
     /**
      * constructor de la clase 
@@ -131,6 +133,6 @@ public class Menu {
         if(avion.estado == false){
             System.out.println("Lo sentimos este avion ya ha despegado, seleccione otro avion");
             menu();
-        }
+        }//if
     }//validar
 }//Menu
