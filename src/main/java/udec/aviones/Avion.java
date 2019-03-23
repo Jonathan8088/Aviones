@@ -8,7 +8,7 @@ public class Avion {
     /**
      * array que contiene las sillas que contiene el avion
      */
-    protected char sillas[][];
+    public char sillas[][];
     /**
      * atributo que contine el precio de las sillas del avion
      */
@@ -24,7 +24,7 @@ public class Avion {
     /**
      * atributo que contiene el estado actual del avion
      */
-    protected boolean estado;
+    public boolean estado;
     /**
      * costructor de la clase
      * @param sillas contiene el vector con las sillas del avion

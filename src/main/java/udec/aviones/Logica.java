@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  *clase que contiene el menu principal del proyecto
  * @author Jonathan
  */
-public class Menu {
+public class Logica {
     /**
      * objeto que hace referecia al avion  con asientos economicos y vip
      */
@@ -30,24 +30,16 @@ public class Menu {
     /**
      * constructor de la clase 
      */
-    public Menu() {
+    public Logica() {
         llenado();
         menu();
     }//constructor
     /**
-     * constructor que recibe un objeto tipo avion traido de otra clase
-     * @param avion objeto con los atributos del avion
+     * constructor de la clase que se realiza para hacer pruebas unitarias
+     * @param avion se recibe un objeto avion solamente para diferenciarlo del constructor principal de la clase
      */
-    public Menu(Avion avion) {
-        if(avion.tipo == 1){
-            mixto = (AvionMixto) avion;
-        }else if(avion.tipo == 2){
-            economico= (AvionEconomico)avion;
-        }else if(avion.tipo == 3){
-            vip = (AvionVIP) avion;
-        }//if
-        menu();
-    }//constructor
+    public Logica(Avion avion) {
+    }//Loica
     /**
      * metodo que muestra por consola el menu principal del proyecto
      */
@@ -68,32 +60,39 @@ public class Menu {
      * @param opcion opcion seleccionada en menu
      */
     private void seleccion(byte opcion){
+        boolean despega;
         switch(opcion){
             case 1:{
-                validar(mixto);
-                System.out.println("Elija el tipo de silla que desea comprar:");
-                System.out.println("1. VIP.\n2. Economica.");
-                try {
-                    byte seleccion = dato.nextByte();
-                    if(seleccion == 1){
-                        menuMixto(mixto);
-                    }else{
-                         menuMixto(mixto);
-                    }//else
-                    break;
-                } catch (InputMismatchException e) {
-                    System.out.println("Caracter no valido");
-                    dato = new Scanner(System.in);
-                    seleccion(opcion);
-                }//catch
+                despega=despegar(mixto);
+                if(despega){
+                    System.out.println("Elija el tipo de silla que desea comprar:");
+                    System.out.println("1. VIP.\n2. Economica.");
+                    try {
+                        byte seleccion = dato.nextByte();
+                        if(seleccion == 1){
+                            menuMixto(mixto);
+                        }else{
+                             menuMixto(mixto);
+                        }//else
+                        break;
+                    } catch (InputMismatchException e) {
+                        System.out.println("Caracter no valido");
+                        dato = new Scanner(System.in);
+                        seleccion(opcion);
+                    }//catch
+                }else menu();  
             }case 2:{
-                validar(economico);
-                menu(economico);
-                break;
+                despega=despegar(economico);
+                if(despega){
+                    menu(economico);
+                    break;
+                }else menu();
             }case 3:{
-                validar(vip);
-                menu(vip);
-                break;
+                despega=despegar(vip);
+                if(despega){
+                    menu(vip);
+                    break;
+                }else menu();
             }case 4:{
                 System.exit(0);
             }default:{
@@ -134,13 +133,6 @@ public class Menu {
             }//for j
         }//for i
     }//llenado
-    private void validar(Avion avion){
-        if(avion.estado == false){
-            System.out.println("Lo sentimos este avion ya ha despegado, seleccione otro avion");
-            menu();
-        }//if
-    }//validar
-    //////////////////////////////////////////////////////////////////
      /**
      * menu que se muestra al comenzar la clase
      * @param avion objeto que contiene los atributos del avion a administrar
@@ -203,6 +195,19 @@ public class Menu {
             }//default
         }//switch
     }//seleccion
+    /**
+     * metodo que valida si un avion ya despego o sigue en venta
+     * @param avion objeto que hace referencia al avion que se esta validando
+     * @return boolean
+     */
+    public boolean despegar(Avion avion){
+        if(avion.estado){
+            return true;
+        }else{
+            System.out.println("Lo sentimos, este avion ya despego por favor seleccione otro avion");
+            return false;
+        }//else
+    }//despegar
     /**
      * metodo que redirige cuando se quiere administrar las sills vip del avion mixto
      * @param opcion opcion deseada por el usuario
@@ -274,15 +279,16 @@ public class Menu {
         System.out.println("Los espacios marcados con O son los asientos disponibles, los marcados como X son asientos ya vendidos");
         System.out.println("Por favor digite la coordenada en x de la silla que desea: ");
         try {
+            boolean validar;
             byte coordenadaX = dato.nextByte();
-            if(coordenadaX > avion.sillas.length || coordenadaX <=0){
-                System.out.println("Dato fuera del rango de sillas por favor intente de nuevo");
+            validar = validarCoordenadas(coordenadaX, avion.sillas.length);
+            if(!validar){
                 comprarAsiento(avion);
             }else{
                 System.out.println("Por favor digite la coordenada en y de la silla que desea: ");
                 byte coordenadaY = dato.nextByte();
-                if(coordenadaY > avion.sillas.length || coordenadaY <=0){
-                    System.out.println("Dato fuera del rango de sillas por favor intente de nuevo");
+                validar = validarCoordenadas(coordenadaY, avion.sillas.length);
+                if(!validar){
                     comprarAsiento(avion);
                 }else{
                     vender(avion, coordenadaX, coordenadaY);
@@ -303,15 +309,16 @@ public class Menu {
         System.out.println("Los espacios marcados con O son los asientos disponibles, los marcados como X son asientos ya vendidos");
         System.out.println("Por favor digite la coordenada en x de la silla que desea: ");
         try {
+            boolean validar;
             byte coordenadaX = dato.nextByte();
-            if(coordenadaX > avion.getSillasVIP().length || coordenadaX <=0){
-                System.out.println("Dato fuera del rango de sillas por favor intente de nuevo");
+            validar = validarCoordenadas(coordenadaX, avion.getSillasVIP().length);
+            if(!validar){
                 comprarAsientoMixto(avion);
             }else{
                 System.out.println("Por favor digite la coordenada en y de la silla que desea: ");
                 byte coordenadaY = dato.nextByte();
-                if(coordenadaY > avion.getSillasVIP().length || coordenadaY <=0){
-                    System.out.println("Dato fuera del rango de sillas por favor intente de nuevo");
+                validar = validarCoordenadas(coordenadaY, avion.getSillasVIP().length);
+                if(!validar){
                     comprarAsientoMixto(avion);
                 }else{
                     venderMixto(avion, coordenadaX, coordenadaY);   
@@ -324,6 +331,20 @@ public class Menu {
         }//catch        
     }//conprarAsientoMixto
     /**
+     * metodo que compara las coordenadas ingresadas poe el usuario para validar que esten dentro del rago de las sillas y que no sean menores o iguales a cero
+     * @param coordenada parametro que recibe la coordenada ingresada por el usuario
+     * @param tamaño parametro que recibe el tamaño del array de sillas para comparar
+     * @return 
+     */
+    public boolean validarCoordenadas(int coordenada, int tamaño){
+        if(coordenada>tamaño || coordenada <=0){
+            System.out.println("Dato fuera del rando silas por favor intente de nuevo");
+            return false;
+        }else{
+            return true;
+        }//else
+    }//validarCoordenadas
+    /**
      * metodo que cambia la posisicon en el vector segun las coordendas dadas por el cliente
      * @param avion objeto que contiene la matriz donde se encuentran los asientos
      * @param coordenadaX coordenada en el eje x de la ubicacion del asiento
@@ -333,13 +354,15 @@ public class Menu {
         System.out.println("Esta silla tiene un precio de: "+avion.precio);
         System.out.println("¿Desea confirmar su compra? S/N");
         try {
+            boolean validaSilla;
             String respuesta = dato.next();
             if(respuesta.equals("s")||respuesta.equals("S")){
                 for(int i = 0; i<avion.sillas.length; i++){
                     if(i == coordenadaX-1){
                         for(int j = 0 ; j<avion.sillas[i].length;j++){
                             if(j == coordenadaY-1){
-                                if(avion.sillas[i][j] == 'O'){
+                                validaSilla = validaSilla(avion.sillas[i][j]);
+                                if(validaSilla){
                                     datosCliente();
                                     avion.sillas[i][j] = 'X';
                                     avion.total += avion.precio;
@@ -364,6 +387,16 @@ public class Menu {
         }//catch
     }//vender
     /**
+     * metodo que valida si la silla se encuentra vendida o no
+     * @param valor parametro que recibe el valor dentro del array de sillas para validar si esta vendida o no
+     * @return 
+     */
+    public boolean validaSilla(char valor){
+        if(valor == 'O'){
+            return true;
+        }else return false;
+    }//validaSilla
+    /**
      * metodo que confirma la venta del asiento de tipo vip en el avion mixto
      * @param avion objeto con los atributos del avion mixto
      * @param coordenadaX coordenada en el eje x del asiento que se va a vender
@@ -373,13 +406,15 @@ public class Menu {
         System.out.println("Esta silla tiene un precio de: "+avion.getPrecioVIP());
         System.out.println("¿Desea confirmar su compra? S/N");
         try {
+            boolean validaSilla;
             String respuesta = dato.next();
             if(respuesta.equals("s")||respuesta.equals("S")){
                 for(int i = 0; i<avion.getSillasVIP().length; i++){
                     if(i == coordenadaX-1){
                         for(int j = 0 ; j<avion.getSillasVIP()[i].length;j++){
                             if(j == coordenadaY-1){
-                                if(avion.getSillasVIP()[i][j] == 'O'){
+                                validaSilla = validaSilla(avion.getSillasVIP()[i][j]);
+                                if(validaSilla){
                                     datosCliente();
                                     avion.getSillasVIP()[i][j] = 'X';
                                     avion.total += avion.getPrecioVIP();
